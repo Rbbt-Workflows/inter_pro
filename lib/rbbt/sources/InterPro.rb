@@ -1,5 +1,6 @@
 require 'rbbt-util'
 require 'rbbt/sources/organism'
+
 module InterPro
   extend Resource
   self.subdir = "share/databases/InterPro"
