@@ -8,7 +8,7 @@ module InterPro
   InterPro.claim InterPro.source.protein2ipr, :url, "ftp://ftp.ebi.ac.uk/pub/databases/interpro/protein2ipr.dat.gz"
 
   InterPro.claim InterPro.protein_domains, :proc do
-    organism = "Hsa"
+    organism = "Hsa/feb2014"
     uniprot_colum = TSV::Parser.new(Organism.protein_identifiers(organism).open).all_fields.index("UniProt/SwissProt Accession")
     uniprots = CMD.cmd("grep -v  '^#'|cut -f #{uniprot_colum+1}", :in => Organism.protein_identifiers(organism).open).read.split("\n").collect{|l| l.split("|")}.flatten.uniq.reject{|l| l.empty?}
    
