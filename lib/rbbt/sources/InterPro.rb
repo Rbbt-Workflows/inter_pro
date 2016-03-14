@@ -40,7 +40,7 @@ module InterPro
   end
 
   def self.domain_index
-    @@domain_index ||= InterPro.protein_domains.tsv(:persist => true, :unnamed => true, :key_field => "UniProt/SwissProt Accession", :fields => ["InterPro ID"], :merge => true)
+    @@domain_index          ||= InterPro.protein_domains.tsv(:persist => true, :unnamed => true, :key_field => "UniProt/SwissProt Accession", :fields => ["InterPro ID"], :merge => true)
   end
 
   def self.domain_position_index
@@ -49,7 +49,7 @@ module InterPro
 
   def self.ens2uniprot(organism)
     @@ens2uniprot_index ||= {}
-    @@ens2uniprot_index[organism] ||= Organism.protein_identifiers(organism).tsv(:persist => true, :unnamed => true, :fields => ["UniProt/SwissProt Accession"], :key_field => "Ensembl Protein ID", :type => :double, :merge => true)
+    @@ens2uniprot_index[organism] ||= Organism.protein_identifiers(organism).tsv(:persist => true, :unnamed => true, :fields => ["UniProt/SwissProt Accession"], :key_field => "Ensembl Protein ID", :type => :flat, :merge => true)
   end
 
 end
