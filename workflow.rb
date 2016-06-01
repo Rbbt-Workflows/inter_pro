@@ -5,7 +5,7 @@ require 'rbbt/sources/InterPro'
 module InterPro
   extend Workflow
 
-  input :mutated_isoforms, :array, "Mutated Isoforms"
+  input :mutated_isoforms, :array, "Mutated Isoforms", nil, :stream => true
   input :organism, :string, "Organism code", Organism.default_code("Hsa")
   task :domains => :tsv do |mis,organism|
     ens2uni = InterPro.ens2uniprot(organism)
