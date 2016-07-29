@@ -5,7 +5,7 @@ module InterPro
   extend Resource
   self.subdir = "share/databases/InterPro"
 
-  InterPro.claim InterPro.source.protein2ipr, :url, "ftp://ftp.ebi.ac.uk/pub/databases/interpro/protein2ipr.dat.gz"
+  InterPro.claim InterPro['.source'].protein2ipr, :url, "ftp://ftp.ebi.ac.uk/pub/databases/interpro/protein2ipr.dat.gz"
 
   InterPro.claim InterPro.protein_domains, :proc do
     organism = "Hsa/feb2014"
@@ -14,7 +14,7 @@ module InterPro
    
     tsv = nil
     TmpFile.with_file(uniprots * "\n") do |tmpfile|
-        tsv = TSV.open(CMD.cmd("cut -f 1,2,5,6 | sort -u |grep -w -F -f #{ tmpfile }", :in => InterPro.source.protein2ipr.open, :pipe => true), :merge => true, :type => :double)
+        tsv = TSV.open(CMD.cmd("cut -f 1,2,5,6 | sort -u |grep -w -F -f #{ tmpfile }", :in => InterPro['.source'].protein2ipr.open, :pipe => true), :merge => true, :type => :double)
     end
  
     tsv.key_field = "UniProt/SwissProt Accession"
@@ -23,8 +23,7 @@ module InterPro
   end
 
   InterPro.claim InterPro.domain_names, :proc do
-    #tsv = InterPro.source.protein2ipr.tsv :key_field => 1, :fields => [2], :type => :single
-    tsv = TSV.open(CMD.cmd("cut -f 2,3 | sort -u", :in => InterPro.source.protein2ipr.open, :pipe => true), :merge => true, :type => :single)
+    tsv = TSV.open(CMD.cmd("cut -f 2,3 | sort -u", :in => InterPro['.source'].protein2ipr.open, :pipe => true), :merge => true, :type => :single)
  
     tsv.key_field = "InterPro ID"
     tsv.fields = ["Domain Name"]
