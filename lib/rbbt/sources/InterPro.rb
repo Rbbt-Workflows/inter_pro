@@ -7,19 +7,30 @@ module InterPro
 
   InterPro.claim InterPro['.source'].protein2ipr, :url, "ftp://ftp.ebi.ac.uk/pub/databases/interpro/protein2ipr.dat.gz"
 
-  InterPro.claim InterPro.protein_domains, :proc do
-    organism = "Hsa/feb2014"
-    uniprot_colum = TSV::Parser.new(Organism.protein_identifiers(organism).open).all_fields.index("UniProt/SwissProt Accession")
-    uniprots = CMD.cmd("grep -v  '^#'|cut -f #{uniprot_colum+1}", :in => Organism.protein_identifiers(organism).open).read.split("\n").collect{|l| l.split("|")}.flatten.uniq.reject{|l| l.empty?}
-   
-    tsv = nil
-    TmpFile.with_file(uniprots * "\n") do |tmpfile|
-        tsv = TSV.open(CMD.cmd("cut -f 1,2,5,6 | sort -u |grep -w -F -f #{ tmpfile }", :in => InterPro['.source'].protein2ipr.open, :pipe => true), :merge => true, :type => :double)
+  %w(Hsa Mmu Rno).each do |organism|
+    codes = Organism.organism_codes(organism)
+    codes.each do |code|
+      InterPro.claim InterPro[code].protein_domains, :proc do
+        uniprot_colum = TSV::Parser.new(Organism.protein_identifiers(code).open).all_fields.index("UniProt/SwissProt Accession")
+        uniprots = CMD.cmd("grep -v  '^#'|cut -f #{uniprot_colum+1}", :in => Organism.protein_identifiers(code).open).read.split("\n").collect{|l| l.split("|")}.flatten.uniq.reject{|l| l.empty?}
+
+        tsv = nil
+        TmpFile.with_file(uniprots * "\n") do |tmpfile|
+          tsv = TSV.open(CMD.cmd("cut -f 1,2,5,6 |grep -w -F -f #{ tmpfile }| sort -u ", :in => InterPro['.source'].protein2ipr.open, :pipe => true), :merge => true, :type => :double, :monitor => true)
+        end
+
+        tsv.key_field = "UniProt/SwissProt Accession"
+        tsv.fields = ["InterPro ID", "Domain Start AA", "Domain End AA"]
+        tsv.to_s
+      end
     end
- 
-    tsv.key_field = "UniProt/SwissProt Accession"
-    tsv.fields = ["InterPro ID", "Domain Start AA", "Domain End AA"]
-    tsv.to_s
+  end
+
+  InterPro.claim InterPro.protein_domains, :proc do |filename|
+    organism = "Hsa/feb2014"
+    source = InterPro[organism].protein_domains.produce.find
+    Open.link source, filename
+    nil
   end
 
   InterPro.claim InterPro.domain_names, :proc do
@@ -52,4 +63,3 @@ module InterPro
   end
 
 end
-
