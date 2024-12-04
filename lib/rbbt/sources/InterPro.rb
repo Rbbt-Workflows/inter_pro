@@ -5,7 +5,7 @@ module InterPro
   extend Resource
   self.subdir = "share/databases/InterPro"
 
-  InterPro.claim InterPro['.source'].protein2ipr, :url, "ftp://ftp.ebi.ac.uk/pub/databases/interpro/protein2ipr.dat.gz"
+  InterPro.claim InterPro['.source'].protein2ipr, :url, "ftp://ftp.ebi.ac.uk/pub/databases/interpro/releases/103.0/protein2ipr.dat.gz"
 
   %w(Hsa Mmu Rno).each do |organism|
     codes = Organism.organism_codes(organism)
